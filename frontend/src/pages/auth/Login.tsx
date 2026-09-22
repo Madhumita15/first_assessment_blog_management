@@ -6,9 +6,14 @@ import { LoginInput } from "../../services/json/inputsData/login.input";
 import DynamicInput from "../../components/DynamicInput";
 import { CircularProgress } from "@mui/material";
 import { LoginSchema } from "../../validation/login.validation";
+import { useAppDispatch, useAppSeletor } from "../../services/helper/redux";
+import { login } from "../../store/slices/user.slice";
+import { toast } from "sonner";
 
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { loading } = useAppSeletor((state) => state.user);
 
   const {
     formState: { errors },
@@ -25,41 +30,36 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     console.log(data);
-    // try {
-    //   const response = await dispatch(login(data)).unwrap();
-    //   console.log("fresponse from login page", response);
-    //   if (response.status === true) {
-    //     toast.success(response.message);
-    //     await dispatch(getProfile());
+    try {
+      const response = await dispatch(login(data)).unwrap();
+      console.log("fresponse from login page", response);
+      if (response.success === true) {
+        toast.success(response.message);
+        if (response.data.role === "admin") {
+          navigate("/admin/adminBlogmanagement");
+        } else {
+          navigate("/user/userBlogmanagement");
+        }
 
-    //     if (response.data.role === "admin") {
-    //       navigate("/admin/dashboard");
-    //     } else {
-    //       if (response.data.isFirstLogin) {
-    //         navigate("/update-password");
-    //       } else {
-    //         navigate("/user/dashboard");
-    //       }
-    //     }
-
-    //     reset();
-    //   }
-    // } catch (error) {
-    //   toast.error(error as string);
-    // }
+        reset({
+          email: "",
+          password: "",
+        });
+      }
+    } catch (error) {
+      toast.error(error as string);
+    }
   };
 
   return (
     <>
       <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-violet-50/50 to-purple-50 px-4">
-        {/* Background Decorations */}
         <div className="pointer-events-none absolute -left-32 -top-32 h-80 w-80 rounded-full bg-violet-200/50 blur-3xl" />
 
         <div className="pointer-events-none absolute -bottom-32 -right-32 h-80 w-80 rounded-full bg-purple-200/50 blur-3xl" />
 
         <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-fuchsia-100/40 blur-3xl" />
 
-        {/* Login Form */}
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="relative z-10 flex w-full max-w-md flex-col gap-4 rounded-2xl border border-violet-100 bg-white/85 p-8 shadow-2xl shadow-violet-100/70 backdrop-blur-xl sm:p-10"
@@ -73,7 +73,6 @@ const Login = () => {
             Back to Home
           </button>
 
-          {/* Icon */}
           <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-purple-600 shadow-lg shadow-violet-200">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -91,7 +90,6 @@ const Login = () => {
             </svg>
           </div>
 
-          {/* Heading */}
           <div className="mb-4 text-center">
             <h3 className="bg-gradient-to-r from-violet-700 via-purple-600 to-fuchsia-600 bg-clip-text text-2xl font-bold text-transparent sm:text-3xl">
               Welcome to our Platform
@@ -102,7 +100,6 @@ const Login = () => {
             </p>
           </div>
 
-          {/* Inputs */}
           {LoginInput.map((input) => (
             <DynamicInput
               label={input.label}
@@ -111,22 +108,21 @@ const Login = () => {
               errors={errors}
               register={register}
               name={input.name}
-              //   loading={loading.login}
+              loading={loading.login}
             />
           ))}
 
           {/* Login Button */}
           <button
-            // disabled={loading.login}
+            disabled={loading.login}
             type="submit"
             className="mt-3 w-full rounded-xl bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 p-3 font-bold text-white shadow-lg shadow-violet-200 transition-all duration-300 hover:-translate-y-0.5 hover:from-violet-500 hover:via-purple-500 hover:to-fuchsia-500 hover:shadow-xl hover:shadow-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            login
-            {/* {loading.login ? (
+            {loading.login ? (
               <CircularProgress size={24} sx={{ color: "#ffffff" }} />
             ) : (
               "Login"
-            )} */}
+            )}
           </button>
 
           <h1 className="text-center">

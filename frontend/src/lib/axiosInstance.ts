@@ -1,96 +1,73 @@
-import axios, { type InternalAxiosRequestConfig } from "axios";
+import axios from "axios";
+import Cookies from "js-cookie";
 
-export const axiosInstance = axios.create({
+const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URL,
-  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-type FailedQueueItem = {
-  resolve: () => void;
-  reject: (error: unknown) => void;
-};
-
-interface CustomAxiosRequestConfig
-  extends InternalAxiosRequestConfig {
-  _retry?: boolean;
-}
-
-let isRefreshing = false;
-let failedQueue: FailedQueueItem[] = [];
-
-const processQueue = (error: unknown) => {
-  failedQueue.forEach(({ resolve, reject }) => {
-    if (error) {
-      reject(error);
-    } else {
-      resolve();
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = Cookies.get("accessToken");
+    if (token) {
+      config.headers.authorization = `Bearer ${token}`;
     }
-  });
-
-  failedQueue = [];
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+const forceLogout = () => {
+  Cookies.remove("accessToken");
+  Cookies.remove("user");
+  Cookies.remove("role");
+  window.location.href = "/login";
 };
-
-
 
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config as CustomAxiosRequestConfig;
-
-    if (!error.response) {
-      return Promise.reject(error);
-    }
-
-    // Check if error is 401/403, hasn't been retried yet, and isn't the refresh-token route itself
-    if (
-      error.response.status === 401  &&
-      !originalRequest._retry &&
-      !originalRequest.url?.includes("/refresh-token")
-    ) {
-      // OLD CODE:
-      // originalRequest._retry = true; 
-      // ❌ Setting this here means if the request is queued, the retried request won't be able to trigger the interceptor if it fails again.
-
-      if (isRefreshing) {
-        // If a refresh is already happening, queue this request
-        return new Promise<void>((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        })
-          .then(() => {
-            // FIX: Set _retry true right before we actually retry it
-            originalRequest._retry = true; 
-            return axiosInstance(originalRequest);
-          })
-          // FIX: Added catch to prevent unhandled promise rejection if forceLogout is triggered
-          .catch((err) => {
-            return Promise.reject(err);
-          });
-      }
-
-      // FIX: Set _retry true only when we are actually about to refresh the token
+    const originalRequest = error.config;
+    if ((error.response.status === 401 || error.response.status === 403) &&  !originalRequest._retry) {
+      console.log("error in interceptor", error.response);
       originalRequest._retry = true;
-      isRefreshing = true;
-
-      try {
-       await axios.post(`${import.meta.env.VITE_SERVER_URL}/refresh-token`, {}, {
-          withCredentials: true
-        });
-        processQueue(null);
-        return axiosInstance(originalRequest);
-      } catch (refreshError) {
-        processQueue(refreshError);
-        // forceLogout();
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
+      const refreshToken = Cookies.get("refreshToken");
+      if (refreshToken) {
+        // console.log("token avaliable...");
+        const formdata = new FormData();
+        formdata.append("refreshToken", refreshToken);
+        try {
+          const response = await axios.post(
+            `${import.meta.env.VITE_SERVER_URL}/auth/refresh-token`,
+            formdata,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            },
+          );
+          console.log("refresh token response", response);
+          const newaccessToken = response?.data?.newAccessToken;
+          Cookies.set("accessToken", newaccessToken);
+          originalRequest.headers.Authorization = `Bearer ${newaccessToken}`
+          return axiosInstance(originalRequest)
+        } catch (error) {
+          console.log("error", error);
+          forceLogout()
+        }
+      } else {
+        forceLogout();
       }
     }
-
-    return Promise.reject(error);
-  }
+    // if (error.response.status === 401) {
+    //   Cookies.remove("token");
+    //   window.location.href = "/admin/login";
+    // }
+    // return Promise.reject(error);
+  },
 );
 
 export default axiosInstance;

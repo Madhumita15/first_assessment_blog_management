@@ -109,55 +109,58 @@ class AuthController {
   }
 
   async generateRefreshToken(req, res) {
-    try {
-      const refreshToken = req.headers.refreshToken;
-      if (!refreshToken) {
-        return res.status(httpStatusCode.UNAUTHORIZED).json({
-          success: false,
-          message: "Refresh token is not provided",
-        });
-      }
+  try {
+    const { refreshToken } = req.body;
 
-      const decode = jwt.verify(
-        refreshToken,
-        process.env.JWT_REFRESH_SECRET_KEY,
-      );
-      const user = await User.findById(decode._id);
-      if (!user) {
-        return res.status(httpStatusCode.NOT_FOUND).json({
-          success: false,
-          message: "User not found",
-        });
-      }
-
-      if (user.refreshToken !== refreshToken) {
-        return res.status(httpStatusCode.BAD_REQUEST).json({
-          success: false,
-          message: "Refresh token is invalid",
-        });
-      }
-
-      const newAccessToken = jwt.sign(
-        {
-          _id: user._id,
-          role: user.role,
-        },
-        proccess.env.JWT_ACCESS_SECRET_KEY,
-        { expiresIn: "15m" },
-      );
-
-      return res.status(httpStatusCode.OK).json({
-        status: true,
-        message: "new accessToken token generated",
-        newAccessToken: newAccessToken,
-      });
-    } catch (error) {
-      return res.status(httpStatusCode.SERVER_ERROR).json({
+    if (!refreshToken) {
+      return res.status(httpStatusCode.UNAUTHORIZED).json({
         success: false,
-        message: error.message,
+        message: "Refresh token is not provided",
       });
     }
+
+    const decode = jwt.verify(
+      refreshToken,
+      process.env.JWT_REFRESH_SECRET_KEY,
+    );
+
+    const user = await User.findById(decode._id);
+
+    if (!user) {
+      return res.status(httpStatusCode.NOT_FOUND).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (user.refreshToken !== refreshToken) {
+      return res.status(httpStatusCode.BAD_REQUEST).json({
+        success: false,
+        message: "Refresh token is invalid",
+      });
+    }
+
+    const newAccessToken = jwt.sign(
+      {
+        _id: user._id,
+        role: user.role,
+      },
+      process.env.JWT_ACCESS_SECRET_KEY,
+      { expiresIn: "7d" },
+    );
+
+    return res.status(httpStatusCode.OK).json({
+      success: true,
+      message: "New access token generated",
+      newAccessToken,
+    });
+  } catch (error) {
+    return res.status(httpStatusCode.UNAUTHORIZED).json({
+      success: false,
+      message: error.message,
+    });
   }
+}
 
   async logout(req, res) {
     try {

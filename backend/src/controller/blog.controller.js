@@ -7,6 +7,8 @@ class BlogController {
     try {
       const { content, title } = req.body;
       const id = req.user._id;
+      console.log("content1");
+      // console.log(content, title)
 
       const newBlog = new Blog({
         content: content,
@@ -46,7 +48,7 @@ class BlogController {
 
   async getAllBlogs(req, res) {
     try {
-      const data = await Blog.find({ isDeletedByUser: false });
+      const data = await Blog.find({isDeletedByUser: false });
       if (!data) {
         return res.status(httpStatusCode.OK).json({
           success: true,
@@ -71,7 +73,34 @@ class BlogController {
   async getBlogById(req, res) {
     try {
       const id = req.params.id;
-      const data = await Blog.findOne({ _id: id, isDeletedByUser: false });
+      const data = await Blog.findOne({ _id: id });
+      if (!data) {
+        return res.status(httpStatusCode.NOT_FOUND).json({
+          success: false,
+          message: "Blog not found",
+          data: null,
+        });
+      } else {
+        return res.status(httpStatusCode.OK).json({
+          success: true,
+          message: "Blog fetched successfully!",
+          data: data,
+        });
+      }
+    } catch (error) {
+      return res.status(httpStatusCode.SERVER_ERROR).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+
+  
+  async getMyBlog(req, res) {
+    try {
+      const id = req.user._id;
+      const data = await Blog.findOne({ author: id, isDeletedByUser: false });
       if (!data) {
         return res.status(httpStatusCode.NOT_FOUND).json({
           success: false,
@@ -100,47 +129,47 @@ class BlogController {
       const blogId = req.params.id;
       const role = req.user.role;
 
-      let data = null;
-
+      let data;
       if (role === "admin") {
         data = await Blog.findById(blogId);
-        if (req.file) {
-          if (data && data.blog_image) {
-            await cloudinary.uploader.destroy(data.blog_public_id);
-          }
-        }
-        if (!data) {
-          return res.status(httpStatusCode.NOT_FOUND).json({
-            success: false,
-            message: "Blog not found",
-          });
-        }
-      }
-      data = await Blog.findOne({ author: userId, _id: blogId });
-      if (!data) {
-        if (req.file) {
-          if (data && data.blog_image) {
-            await cloudinary.uploader.destroy(data.blog_public_id);
-          }
-        }
-        return res.status(httpStatusCode.NOT_FOUND).json({
-          success: false,
-          message: "Blog is not found or you are not the author of this blog",
+      } else {
+        data = await Blog.findOne({
+          _id: blogId,
+          author: userId,
         });
       }
 
-      data.content = content;
-      data.title = title;
-      if (req.file) {
-        if (data && data.blog_image) {
-          await cloudinary.uploader.destroy(data.blog_public_id);
+      if (!data) {
+        if (req.file) {
+          await cloudinary.uploader.destroy(req.file.filename);
         }
 
+        return res.status(httpStatusCode.NOT_FOUND).json({
+          success: false,
+          message:
+            role === "admin"
+              ? "Blog not found"
+              : "Blog is not found or you are not the author of this blog",
+        });
+      }
+      if (content !== undefined) {
+        data.content = content;
+      }
+
+      if (title !== undefined) {
+        data.title = title;
+      }
+
+      if (req.file) {
+        if (data.blog_public_id) {
+          await cloudinary.uploader.destroy(data.blog_public_id);
+        }
         data.blog_image = req.file.path;
         data.blog_public_id = req.file.filename;
       }
 
       await data.save();
+
       return res.status(httpStatusCode.OK).json({
         success: true,
         message: "Blog updated successfully!",
@@ -150,6 +179,7 @@ class BlogController {
       if (req.file) {
         await cloudinary.uploader.destroy(req.file.filename);
       }
+
       return res.status(httpStatusCode.SERVER_ERROR).json({
         success: false,
         message: error.message,

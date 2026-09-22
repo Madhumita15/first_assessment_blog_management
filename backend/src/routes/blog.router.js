@@ -37,6 +37,12 @@ router.get(
 );
 
 router.get(
+  "/my-blogs",
+  authMiddleware.verifyToken,
+  authMiddleware.roleCheck("user"),
+  blogController.getMyBlog,
+);
+router.get(
   "/blogs/:id",
   blogController.getBlogById,
 );

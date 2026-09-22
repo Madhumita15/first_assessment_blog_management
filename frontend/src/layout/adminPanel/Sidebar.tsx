@@ -10,6 +10,7 @@ const Sidebar = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { accessToken, role, user } = useAppSeletor((state) => state.user);
+  console.log("user", role)
 
   const adminMenu = [
     {
@@ -95,7 +96,7 @@ const Sidebar = () => {
         </div>
         <Button
           variant="contained"
-          className="w-[270px] absolute top-96  left-4"
+          className={`w-[270px] absolute ${role === "admin" ? "top-96" : "top-[450px]" }  left-4`}
           style={{
             padding: "10px",
             backgroundColor: "#7e22ce",

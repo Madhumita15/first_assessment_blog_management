@@ -3,7 +3,8 @@ export const ENDPOINT = {
     logout: "/auth/logout",
     register: "/auth/register",
     blog: "/blogs",
-    user: "/users"
+    user: "/users",
+    myblog: "/my-blog"
     
 
 

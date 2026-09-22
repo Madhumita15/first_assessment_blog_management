@@ -24,7 +24,7 @@ const uploadMiddleware = (req, res, next)=>{
 router.post("/register", uploadMiddleware, validation.validate(userSchemaValidation.register), userController.register)
 router.post("/login", validation.validate(userSchemaValidation.login), userController.login)
 router.post("/logout", authMiddleware.verifyToken, userController.logout)
-router.post("/refresh-token", authMiddleware.verifyToken, userController.generateRefreshToken)
+router.post("/refresh-token", userController.generateRefreshToken)
 
 
 

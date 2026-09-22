@@ -35,12 +35,20 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     console.log(data);
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    if (data.profile_image) {
+      formData.append("name", data.profile_image);
+    }
+
     try {
-      const response = await dispatch(signup(data)).unwrap();
+      const response = await dispatch(signup({data: formData})).unwrap();
       console.log(response);
       if (response.success === true) {
         toast.success(response.message);
-        navigate("/login")
+        navigate("/login");
         reset({
           email: "",
           password: "",

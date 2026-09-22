@@ -29,45 +29,52 @@ const forceLogout = () => {
 
 axiosInstance.interceptors.response.use(
   (response) => response,
+
   async (error) => {
     const originalRequest = error.config;
-    if ((error.response.status === 401 || error.response.status === 403) &&  !originalRequest._retry) {
-      console.log("error in interceptor", error.response);
+
+    if (
+      (error.response?.status === 401 ||
+        error.response?.status === 403) &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
+
       const refreshToken = Cookies.get("refreshToken");
-      if (refreshToken) {
-        // console.log("token avaliable...");
-        const formdata = new FormData();
-        formdata.append("refreshToken", refreshToken);
-        try {
-          const response = await axios.post(
-            `${import.meta.env.VITE_SERVER_URL}/auth/refresh-token`,
-            formdata,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            },
-          );
-          console.log("refresh token response", response);
-          const newaccessToken = response?.data?.newAccessToken;
-          Cookies.set("accessToken", newaccessToken);
-          originalRequest.headers.Authorization = `Bearer ${newaccessToken}`
-          return axiosInstance(originalRequest)
-        } catch (error) {
-          console.log("error", error);
-          forceLogout()
-        }
-      } else {
+
+      if (!refreshToken) {
         forceLogout();
+        return Promise.reject(error);
+      }
+
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_SERVER_URL}/auth/refresh-token`,
+          {
+            refreshToken,
+          },
+        );
+
+        const newAccessToken = response.data.newAccessToken;
+
+        Cookies.set("accessToken", newAccessToken, {
+          expires: 1 * 24 * 60 * 60 * 1000,
+        });
+
+        originalRequest.headers.authorization =
+          `Bearer ${newAccessToken}`;
+
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        console.log("Refresh token failed:", refreshError);
+
+        forceLogout();
+
+        return Promise.reject(refreshError);
       }
     }
-    // if (error.response.status === 401) {
-    //   Cookies.remove("token");
-    //   window.location.href = "/admin/login";
-    // }
-    // return Promise.reject(error);
+
+    return Promise.reject(error);
   },
 );
-
 export default axiosInstance;

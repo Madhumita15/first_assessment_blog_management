@@ -44,10 +44,7 @@ export const login = createAsyncThunk(
 
 export const signup = createAsyncThunk(
   "user/register",
-  async (
-    data: { name: string; email: string; phone: string },
-    { rejectWithValue },
-  ) => {
+  async ( {data}, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(ENDPOINT.register, data, {
         headers: {
@@ -118,16 +115,16 @@ const userSlice = createSlice({
         state.accessToken = action.payload.acessToken;
         state.role = action.payload.data.role;
         Cookies.set("role", action.payload.data.role, {
-          expires: 30 * 24 * 60 * 60 * 1000,
+          expires: 30 ,
         });
         Cookies.set("user", JSON.stringify(action.payload.data), {
-          expires: 30 * 24 * 60 * 60 * 1000,
+          expires: 30,
         });
         Cookies.set("accessToken", action.payload.accessToken, {
-          expires: 1 * 24 * 60 * 60 * 1000,
+          expires: 7,
         });
         Cookies.set("refreshToken", action.payload.refreshToken, {
-          expires: 30 * 24 * 60 * 60 * 1000,
+          expires: 30,
         });
       })
       .addCase(login.rejected, (state, action) => {

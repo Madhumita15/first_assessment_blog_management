@@ -96,6 +96,7 @@ class AuthController {
           _id: user._id,
           email: user.email,
           name: user.name,
+          role: user.role,
           profile_image: user.profile_image,
         },
       });
@@ -160,7 +161,7 @@ class AuthController {
 
   async logout(req, res) {
     try {
-      const id = req.user_id;
+      const id = req.user._id;
       const user = await User.findById(id);
       if (!user) {
         return res.status(httpStatusCode.NOT_FOUND).json({

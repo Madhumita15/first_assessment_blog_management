@@ -1,4 +1,4 @@
-const httpStatusCode = require("../utils/httpStatusCode");
+const httpStatusCode = require("../utils/httpstatusCode");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.models");
 
@@ -6,7 +6,7 @@ class AuthMiddleware {
   static async verifyToken(req, res, next) {
     try {
       const accessToken = req.headers.authorization;
-    //   console.log(accessToken)
+      console.log("access1",accessToken)
       if (!accessToken || !accessToken.startsWith("Bearer ")) {
         return res.status(httpStatusCode.UNAUTHORIZED).json({
           success: false,
@@ -24,7 +24,7 @@ class AuthMiddleware {
           message: "User not found",
         });
       }
-    //   console.log(user)
+      console.log("user1",user)
 
       req.user = {
         _id: user._id,

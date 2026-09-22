@@ -3,14 +3,10 @@ const router = express.Router();
 const blogController = require("../controller/blog.controller");
 const blogSchemaValidation = require("../validation/blogSchema.validation");
 const validation = require("../validation/index");
-const httpStatusCode = require("../utils/httpstatusCode");
 const authMiddleware = require("../middleware/auth.middleware");
 const upload = require("../utils/cloudinary");
+const httpStatusCode = require("../utils/httpstatusCode");
 
-console.log("authMiddleware:", authMiddleware);
-console.log("validation:", validation);
-console.log("blogSchemaValidation:", blogSchemaValidation);
-console.log("blogController:", blogController.createBlog);
 
 
 

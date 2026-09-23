@@ -26,21 +26,18 @@ const Routes = createBrowserRouter([
     path: "/register",
     element: <Register />,
   },
+
   {
     path: "/",
-    element: <UserProtectedRoute />,
+    element: <UserWrapper />,
     children: [
       {
-        element: <UserWrapper />,
-        children: [
-          {
-            path: "",
-            element: <Home />,
-          },
-        ],
+        path: "",
+        element: <Home />,
       },
     ],
   },
+
   {
     path: "/admin/",
     element: <AdminProtectedRoute />,
@@ -63,11 +60,17 @@ const Routes = createBrowserRouter([
 
   {
     path: "/user/",
-    element: <AdminWrapper />,
+    element: <UserProtectedRoute />,
     children: [
       {
-        path: "userBlogmanagement",
-        element: <UserBlogManagement />,
+        element: <AdminWrapper />,
+
+        children: [
+          {
+            path: "userBlogmanagement",
+            element: <UserBlogManagement />,
+          },
+        ],
       },
     ],
   },

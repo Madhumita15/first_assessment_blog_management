@@ -116,16 +116,16 @@ const userSlice = createSlice({
         state.accessToken = action.payload.accessToken;
         state.role = action.payload.data.role;
         Cookies.set("role", action.payload.data.role, {
-          expires: 30 ,
+          expires: 30 
         });
         Cookies.set("user", JSON.stringify(action.payload.data), {
-          expires: 30,
+          expires:  30 
         });
         Cookies.set("accessToken", action.payload.accessToken, {
-          expires: 7,
+          expires: 1
         });
         Cookies.set("refreshToken", action.payload.refreshToken, {
-          expires: 30,
+          expires:  30
         });
       })
       .addCase(login.rejected, (state, action) => {

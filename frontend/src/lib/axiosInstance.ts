@@ -1,6 +1,8 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
+
+
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URL,
   headers: {
@@ -10,16 +12,22 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
+     
     const token = Cookies.get("accessToken");
+   
     if (token) {
       config.headers.authorization = `Bearer ${token}`;
     }
     return config;
   },
   (error) => {
+      
     return Promise.reject(error);
+    
   },
 );
+
+
 const forceLogout = () => {
   Cookies.remove("accessToken");
   Cookies.remove("user");
@@ -56,9 +64,10 @@ axiosInstance.interceptors.response.use(
         );
 
         const newAccessToken = response.data.newAccessToken;
+        console.log("newaccesstoken", newAccessToken)
 
         Cookies.set("accessToken", newAccessToken, {
-          expires: 1 * 24 * 60 * 60 * 1000,
+          expires: 1,
         });
 
         originalRequest.headers.authorization =

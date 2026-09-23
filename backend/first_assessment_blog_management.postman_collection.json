@@ -1,0 +1,204 @@
+{
+  "info": {
+    "_postman_id": "5982ba98-02c0-479b-8e2c-63d1bdbf0f5b",
+    "name": "first_assessment_blog_management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "55836944",
+    "_collection_link": "https://go.postman.co/collection/55836944-5982ba98-02c0-479b-8e2c-63d1bdbf0f5b?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "localhost:3007/api/auth/login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"admin@gmail.com\",\r\n    \"password\": \"Admin@123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:3007/api/auth/login",
+          "host": [
+            "localhost"
+          ],
+          "port": "3007",
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:3007/api/auth/register",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "name",
+              "value": "Blog Admin",
+              "type": "text"
+            },
+            {
+              "key": "email",
+              "value": "admin@gmail.com",
+              "type": "text"
+            },
+            {
+              "key": "password",
+              "value": "Admin@123",
+              "type": "text"
+            },
+            {
+              "key": "profile_image",
+              "type": "file",
+              "src": [
+                "/C:/Users/Madhu Das/Downloads/simon-english-48nerZQCHgo-unsplash (1).jpg"
+              ]
+            }
+          ]
+        },
+        "url": {
+          "raw": "localhost:3007/api/auth/register",
+          "host": [
+            "localhost"
+          ],
+          "port": "3007",
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:3007/api/blogs",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{json_web_token_0f6l}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "title",
+              "value": "blog4",
+              "type": "text"
+            },
+            {
+              "key": "content",
+              "value": "blog content4",
+              "type": "text"
+            },
+            {
+              "key": "blog_image",
+              "type": "file",
+              "src": [
+                "/C:/Users/Madhu Das/Downloads/jared-rice-NTyBbu66_SI-unsplash (1).jpg"
+              ]
+            }
+          ]
+        },
+        "url": {
+          "raw": "localhost:3007/api/blogs",
+          "host": [
+            "localhost"
+          ],
+          "port": "3007",
+          "path": [
+            "api",
+            "blogs"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:3007/api/blogs",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:3007/api/blogs",
+          "host": [
+            "localhost"
+          ],
+          "port": "3007",
+          "path": [
+            "api",
+            "blogs"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "localhost:3007/api/auth/refresh-token",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"refreshToken\": \"{{json_web_token_162x}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:3007/api/auth/refresh-token",
+          "host": [
+            "localhost"
+          ],
+          "port": "3007",
+          "path": [
+            "api",
+            "auth",
+            "refresh-token"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "json_web_token_0sfq",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_0f6l",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_0z95",
+      "secret": true
+    },
+    {
+      "key": "json_web_token_162x",
+      "secret": true
+    }
+  ]
+}

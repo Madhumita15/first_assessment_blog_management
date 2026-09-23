@@ -40,9 +40,9 @@ const Routes = createBrowserRouter([
 
   {
     path: "/admin/",
-    element: <AdminProtectedRoute />,
-    children: [
-      {
+    // element: <AdminProtectedRoute />,
+    // children: [
+    //   {
         element: <AdminWrapper />,
         children: [
           {
@@ -54,8 +54,8 @@ const Routes = createBrowserRouter([
             element: <AdminUserManagement />,
           },
         ],
-      },
-    ],
+    //   },
+    // ],
   },
 
   {

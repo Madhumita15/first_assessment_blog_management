@@ -69,7 +69,7 @@ export const getMyBlog = createAsyncThunk(
 
 export const getBlogId = createAsyncThunk(
   "blog/getBlogId",
-  async (id, { rejectWithValue }) => {
+  async ({id}, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`${ENDPOINT.blog}/${id}`);
       return response.data;

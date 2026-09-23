@@ -8,7 +8,8 @@ const UserBlogManagement = () => {
   const [open, setOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(null);
   const dispatch = useAppDispatch();
-   const { myBlog } = useAppSeletor((state) => state.blog);
+   const { myBlogs, blogDeleteById } = useAppSeletor((state) => state.blog);
+  
 
   useEffect(() => {
     dispatch(getMyBlog());
@@ -24,13 +25,14 @@ const UserBlogManagement = () => {
         </div>
         <BlogDialog
           open={open}
+          blogData={myBlogs}
           setOpen={setOpen}
           isEdit={isEdit}
           setIsEdit={setIsEdit}
         />
       </div>
       <div>
-        <BlogTable blogData={myBlog} setIsEdit={setIsEdit} setOpen={setOpen} />
+        <BlogTable blogData={myBlogs} blogDeleteById={blogDeleteById} setIsEdit={setIsEdit} setOpen={setOpen} />
       </div>
     </>
   );

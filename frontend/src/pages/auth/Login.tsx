@@ -34,10 +34,11 @@ const Login = () => {
       const response = await dispatch(login(data)).unwrap();
       console.log("fresponse from login page", response);
       if (response.success === true) {
+        console.log("from login response",response.data.role)
         toast.success(response.message);
         if (response.data.role === "admin") {
           navigate("/admin/adminBlogmanagement");
-        } else {
+        } else if(response.data.role === "user"){
           navigate("/user/userBlogmanagement");
         }
 

@@ -5,7 +5,7 @@ const cloudinary = require("../config/cloudinaryConfig");
 class UserController {
   async getAllUser(req, res) {
     try {
-      const users = await User.find();
+      const users = await User.find({role: {$ne: "admin"}});
       if (!users) {
         return res.status(httpStatusCode.OK).json({
           success: true,

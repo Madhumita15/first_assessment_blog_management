@@ -1,4 +1,3 @@
-import React from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -12,10 +11,11 @@ import { useAppDispatch, useAppSeletor } from "../services/helper/redux";
 import { deleteBlog } from "../store/slices/blog.slice";
 import { toast } from "sonner";
 
-const BlogTable = ({ setIsEdit, setOpen, blogData }) => {
+
+const BlogTable = ({ setIsEdit, setOpen, blogData, blogDeleteById }) => {
   const { loading, error } = useAppSeletor((state) => state.blog);
   const dispatch = useAppDispatch();
-console.log("blogdata", blogData)
+  console.log("blogdata", blogData);
   const handleBlogDelete = async (id: string) => {
     try {
       const response = await dispatch(deleteBlog(id)).unwrap();
@@ -26,7 +26,6 @@ console.log("blogdata", blogData)
       toast.error(error as string);
     }
   };
-
 
   return (
     <>
@@ -44,19 +43,19 @@ console.log("blogdata", blogData)
           <TableHead>
             <TableRow>
               <TableCell
-                align="center"
+                
                 style={{ fontWeight: "bold", fontSize: "20px" }}
               >
                 #
               </TableCell>
               <TableCell
-                align="center"
+                
                 style={{ fontWeight: "bold", fontSize: "20px" }}
               >
                 Title
               </TableCell>
               <TableCell
-                align="center"
+             
                 style={{ fontWeight: "bold", fontSize: "20px" }}
               >
                 Content
@@ -74,60 +73,60 @@ console.log("blogdata", blogData)
             <div className="ml-[500px] p-6">
               <CircularProgress size={40} />
             </div>
-          ) : blogData.length === 0 ? (
+          ) : blogData?.length === 0 ? (
             <p className="text-center text-red-500 p-5">Blog not found</p>
           ) : (
             <TableBody>
               {blogData?.map((row) => (
                 <TableRow
-                  key={row?._id}
+                  key={row._id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell>
-                    <img
-                      src={row?.blog_image}
-                      className="h-14 w-14 rounded-md"
-                      alt="blog"
-                    />
+                    {row.blog_image ? (
+                      <img
+                        src={row.blog_image}
+                        className="h-14 w-14 rounded-md"
+                        alt="blog"
+                      />
+                    ) : (
+                      <div className="h-14 w-14 rounded-md flex items-center justify-center border-2 text-xl font-bold border-purple-800">
+                        {row?.title?.slice(0, 2)}
+                      </div>
+                    )}
                   </TableCell>
-                  <TableCell align="center">{row?.title}</TableCell>
-                  <TableCell align="center">{row?.content}</TableCell>
+                  <TableCell >{row.title}</TableCell>
+                  <TableCell >{row.content}</TableCell>
 
                   <TableCell
-                    align="left"
+                   
                     style={{
                       display: "flex",
                       flexDirection: "row",
                       gap: "15px",
-                      paddingLeft: "150px",
                     }}
                   >
                     <Button
-                      // disabled={deleteUserId === row._id}
                       variant="contained"
                       color="success"
                       onClick={() => {
-                        setIsEdit(row?._id);
+                        setIsEdit(row._id);
                         setOpen(true);
                       }}
                     >
-                      {loading.blogUpdate ? (
-                        <CircularProgress size={24} />
-                      ) : (
                       <Edit2 />
-                      )}
                     </Button>
 
                     <Button
-                      // disabled={deleteUserId === row._id}
+                      disabled={blogDeleteById === row._id}
                       variant="contained"
                       color="error"
                       onClick={() => handleBlogDelete(row?._id)}
                     >
-                      {loading.blogDelete ? (
+                      {(loading.blogDelete && blogDeleteById === row._id) ? (
                         <CircularProgress size={24} />
                       ) : (
-                      <Trash2 />
+                        <Trash2 />
                       )}
                     </Button>
                   </TableCell>

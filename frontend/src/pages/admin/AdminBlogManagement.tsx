@@ -10,7 +10,7 @@ const AdminBlogManagement = () => {
   const [open, setOpen] = useState(false)
   const [isEdit, setIsEdit] = useState(null)
   const dispatch = useAppDispatch()
-  const { allBlogs } = useAppSeletor((state) => state.blog);
+  const { allBlogs, blogDeleteById } = useAppSeletor((state) => state.blog);
 
   
     useEffect(() => {
@@ -24,10 +24,10 @@ const AdminBlogManagement = () => {
           <h2 className="text-3xl font-bold ">All Users</h2>
           <Button variant="contained" onClick={()=> setOpen(true)} >Add Blog+</Button>
         </div>
-        <BlogDialog open={open} setOpen={setOpen} isEdit={isEdit} setIsEdit={setIsEdit} />
+        <BlogDialog blogData={allBlogs}  open={open} setOpen={setOpen} isEdit={isEdit} setIsEdit={setIsEdit} />
       </div>
       <div>
-        <BlogTable setIsEdit={setIsEdit} setOpen={setOpen} blogData={allBlogs}/>
+        <BlogTable blogDeleteById={blogDeleteById} setIsEdit={setIsEdit} setOpen={setOpen} blogData={allBlogs}/>
          
       </div>
     </>

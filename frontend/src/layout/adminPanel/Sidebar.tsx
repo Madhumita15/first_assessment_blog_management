@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { LayoutDashboard, User } from "lucide-react";
+import { Rss, User } from "lucide-react";
 import { Button } from "@mui/material";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSeletor } from "../../services/helper/redux";
@@ -10,12 +10,13 @@ const Sidebar = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { accessToken, role, user } = useAppSeletor((state) => state.user);
-  console.log("user", role)
+
+  
 
   const adminMenu = [
     {
       path: "/admin/adminBlogManagement",
-      icon: LayoutDashboard,
+      icon: Rss,
       name: "Blog Management",
     },
     {
@@ -28,7 +29,7 @@ const Sidebar = () => {
   const userMenu = [
     {
       path: "/user/userBlogManagement",
-      icon: LayoutDashboard,
+      icon: Rss,
       name: "BlogManagement",
     },
   ];
@@ -46,13 +47,19 @@ const Sidebar = () => {
     }
   };
 
+  const menuItems =
+  role === "admin"
+    ? adminMenu
+    : role === "user"
+    ? userMenu
+    : [];
+
   return (
     <>
       <div className="relative">
         <div className="mt-28 flex flex-col">
-          {accessToken && role === "user" ? (
-            <>
-              {userMenu?.map((item) => (
+          
+              {accessToken && menuItems?.map((item) => (
                 <NavLink
                   key={item.name}
                   className={({ isActive }) =>
@@ -65,24 +72,11 @@ const Sidebar = () => {
                   {<item.icon />} {item.name}
                 </NavLink>
               ))}
-            </>
-          ) : (
-            <>
-              {adminMenu?.map((item) => (
-                <NavLink
-                  key={item.name}
-                  className={({ isActive }) =>
-                    isActive
-                      ? "shadow-xl bg-slate-700 p-5 text-lg border-l-2 border-l-[#a172cb] border-r-2 border-r-[#a172cb] m-2  font-bold rounded-md flex flex-row gap-2 "
-                      : "shadow-lg p-5 border-r-2 border-l-[#a172cb] border-l-2 border-r-[#a172cb] m-2 text-lg  font-bold rounded-md flex flex-row gap-2 "
-                  }
-                  to={item.path}
-                >
-                  {<item.icon />} {item.name}
-                </NavLink>
-              ))}
-            </>
-          )}
+            
+         
+             
+          
+         
         </div>
 
         <div className="absolute flex gap-3 flex-row items-center bg-slate-900 p-3 top-[470px] rounded-md border border-[#7e22ce]  w-[270px] ml-4">

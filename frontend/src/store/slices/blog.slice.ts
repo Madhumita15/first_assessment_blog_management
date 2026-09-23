@@ -22,7 +22,8 @@ const initialState = {
   },
   allBlogs: [],
   BlogById: null,
-  myBlog: [],
+  blogDeleteById: null,
+  myBlogs: [],
 };
 
 export const createBlog = createAsyncThunk(
@@ -126,7 +127,7 @@ const blogSlice = createSlice({
         state.loading.create = false;
         state.error.create = null;
         state.allBlogs.unshift(action.payload.data);
-        state.myBlog.unshift(action.payload.data);
+        state.myBlogs.unshift(action.payload.data);
       })
       .addCase(createBlog.rejected, (state, action) => {
         state.loading.create = false;
@@ -154,7 +155,8 @@ const blogSlice = createSlice({
       .addCase(getMyBlog.fulfilled, (state, action) => {
         state.loading.myblog = false;
         state.error.myblog = null;
-        state.myBlog = action.payload.data;
+        // console.log("myblog builder", action.payload.data)
+        state.myBlogs = action.payload.data;
       })
       .addCase(getMyBlog.rejected, (state, action) => {
         state.loading.myblog = false;
@@ -185,7 +187,7 @@ const blogSlice = createSlice({
         state.allBlogs = state.allBlogs.map((blog) =>
           blog._id === action.payload.id ? action.payload.data : blog,
         );
-        state.myBlog = state.myBlog.map((blog) =>
+        state.myBlogs = state.myBlogs.map((blog) =>
           blog._id === action.payload.id ? action.payload.data : blog,
         );
       })
@@ -194,9 +196,10 @@ const blogSlice = createSlice({
         state.error.blogUpdate =
           (action.payload as string) || "something went wrong";
       })
-      .addCase(deleteBlog.pending, (state) => {
+      .addCase(deleteBlog.pending, (state, action) => {
         state.loading.blogDelete = true;
         state.error.blogDelete = null;
+        state.blogDeleteById = action.meta.arg
       })
       .addCase(deleteBlog.fulfilled, (state, action) => {
         state.loading.blogDelete = false;
@@ -204,7 +207,7 @@ const blogSlice = createSlice({
         state.allBlogs = state.allBlogs.filter(
           (blog) => blog._id !== action.payload.id,
         );
-        state.myBlog = state.myBlog.filter(
+        state.myBlogs = state.myBlogs.filter(
           (blog) => blog._id !== action.payload.id,
         );
       })

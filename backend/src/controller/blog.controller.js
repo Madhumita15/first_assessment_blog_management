@@ -100,12 +100,12 @@ class BlogController {
   async getMyBlog(req, res) {
     try {
       const id = req.user._id;
-      const data = await Blog.findOne({ author: id, isDeletedByUser: false });
+      const data = await Blog.find({ author: id, isDeletedByUser: false });
       if (!data) {
         return res.status(httpStatusCode.NOT_FOUND).json({
           success: false,
           message: "Blog not found",
-          data: null,
+          data: [],
         });
       } else {
         return res.status(httpStatusCode.OK).json({

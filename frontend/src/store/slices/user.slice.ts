@@ -27,6 +27,7 @@ const initialState = {
   allUsers: [],
   user: user,
   role: role,
+  deleteUserById: null,
   accessToken: accessToken,
 };
 
@@ -112,7 +113,7 @@ const userSlice = createSlice({
         state.error.login = null;
         console.log("action from login builder", action.payload);
         state.user = action.payload.data;
-        state.accessToken = action.payload.acessToken;
+        state.accessToken = action.payload.accessToken;
         state.role = action.payload.data.role;
         Cookies.set("role", action.payload.data.role, {
           expires: 30 ,
@@ -180,8 +181,9 @@ const userSlice = createSlice({
         state.error.logout =
           (action.payload as string) || "something went wrong";
       })
-      .addCase(deleteUserByAdmin.pending, (state) => {
+      .addCase(deleteUserByAdmin.pending, (state, action) => {
         state.error.deleteUser = null;
+        state.deleteUserById = action.meta.arg
         state.loading.deleteUser = true;
       })
       .addCase(deleteUserByAdmin.fulfilled, (state, action) => {

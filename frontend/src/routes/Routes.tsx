@@ -7,11 +7,20 @@ import AdminWrapper from "../layout/adminPanel/AdminWrapper";
 import AdminBlogManagement from "../pages/admin/AdminBlogManagement";
 import UserBlogManagement from "../pages/user/UserBlogManagement";
 import AdminUserManagement from "../pages/admin/AdminUserManagement";
+import PublicProtectedRoute from "../components/PublicProtectedRoute";
+import UserProtectedRoute from "../components/UserProtectedRoute";
+import AdminProtectedRoute from "../components/AdminProtectedRoute";
 
 const Routes = createBrowserRouter([
   {
     path: "/login",
-    element: <Login />,
+    element: <PublicProtectedRoute />,
+    children: [
+      {
+        path: "",
+        element: <Login />,
+      },
+    ],
   },
   {
     path: "/register",
@@ -19,25 +28,35 @@ const Routes = createBrowserRouter([
   },
   {
     path: "/",
-    element: <UserWrapper />,
+    element: <UserProtectedRoute />,
     children: [
       {
-        path: "",
-        element: <Home />,
+        element: <UserWrapper />,
+        children: [
+          {
+            path: "",
+            element: <Home />,
+          },
+        ],
       },
     ],
   },
   {
     path: "/admin/",
-    element: <AdminWrapper />,
+    element: <AdminProtectedRoute />,
     children: [
       {
-        path: "adminBlogmanagement",
-        element: <AdminBlogManagement />,
-      },
-      {
-        path: "userManagement",
-        element: <AdminUserManagement />,
+        element: <AdminWrapper />,
+        children: [
+          {
+            path: "adminBlogmanagement",
+            element: <AdminBlogManagement />,
+          },
+          {
+            path: "userManagement",
+            element: <AdminUserManagement />,
+          },
+        ],
       },
     ],
   },

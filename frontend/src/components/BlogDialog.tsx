@@ -14,11 +14,12 @@ import { blogSchema } from "../validation/blog.validation";
 import { createBlog, getAllBlog, getMyBlog, updateBlog } from "../store/slices/blog.slice";
 import { blogInput } from "../services/json/inputsData/blog.input";
 
-const BlogDialog = ({ open, setOpen, isEdit, setIsEdit }) => {
+const BlogDialog = ({ open, setOpen, isEdit, setIsEdit, blogData }) => {
   const dispatch = useAppDispatch();
   const [previewImage, setPreviewImage] = React.useState("");
-  const { loading, allBlogs } = useAppSeletor((state) => state.blog);
+  const { loading } = useAppSeletor((state) => state.blog);
 
+  console.log("blogData", blogData)
   const {
     formState: { errors },
     register,
@@ -77,14 +78,14 @@ const BlogDialog = ({ open, setOpen, isEdit, setIsEdit }) => {
   React.useEffect(() => {
     if (isEdit) {
       console.log(isEdit);
-      const blogData = allBlogs?.find((blog) => blog?._id === isEdit);
+      const data = blogData?.find((blog) => blog?._id === isEdit);
       reset({
-        title: blogData?.title || "",
-        content: blogData?.content || "",
+        title: data?.title || "",
+        content: data?.content || "",
       });
-      setPreviewImage(blogData?.blog_image);
+      setPreviewImage(data?.blog_image);
     }
-  }, [isEdit, allBlogs, reset]);
+  }, [isEdit, blogData, reset]);
 
   return (
     <>
@@ -109,7 +110,7 @@ const BlogDialog = ({ open, setOpen, isEdit, setIsEdit }) => {
               fontSize: "20px",
             }}
           >
-            {isEdit ? "Update user" : "create user"}
+            {isEdit ? "Update Blog" : "create Blog"}
           </DialogTitle>
           <DialogContent>
             <form

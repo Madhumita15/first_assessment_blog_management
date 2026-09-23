@@ -4,7 +4,7 @@ export const ENDPOINT = {
     register: "/auth/register",
     blog: "/blogs",
     user: "/users",
-    myblog: "/my-blog"
+    myblog: "/my-blogs"
     
 
 
